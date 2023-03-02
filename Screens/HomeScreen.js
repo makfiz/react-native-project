@@ -86,7 +86,6 @@ export const HomeScreen = ({ route, navigation }) => {
                       <TouchableOpacity
                         style={styles.postInfoBtn}
                         activeOpacity={0.8}
-                        // onPress={() => likePost(item.id)}
                       >
                         <AntDesign
                           name="like2"

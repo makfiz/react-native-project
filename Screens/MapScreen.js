@@ -11,8 +11,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 30,
     paddingHorizontal: 15,
-    // justifyContent: "center",
-    // alignItems: "center",
     borderBottomColor: '#B3B3B3',
     borderTopColor: '#B3B3B3',
     borderBottomWidth: 1,
