@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-
+//
 import { FlatList } from 'react-native';
 import { FontAwesome, AntDesign, EvilIcons } from '@expo/vector-icons';
 export const PostsScreen = ({ navigation }) => {

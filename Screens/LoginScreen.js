@@ -70,7 +70,7 @@ export default function LoginScreen({ navigation }) {
     </TouchableWithoutFeedback>
   );
 }
-
+//
 const styles = StyleSheet.create({
   container: {
     flex: 1,
