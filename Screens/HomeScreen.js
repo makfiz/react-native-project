@@ -31,8 +31,8 @@ export const HomeScreen = ({ route, navigation }) => {
       comments: [],
       description: 'test2 description2',
       location: {
-        latitude: 50.450001,
-        longitude: 30.523333,
+        latitude: 50.482001,
+        longitude: 30.673333,
       },
       likes: 10,
     },

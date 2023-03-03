@@ -1,6 +1,6 @@
 import React from 'react';
-import { AuthNav } from '../Navigation/authNav';
-import { UserNav } from '../Navigation/userNav';
+import { AuthNav } from './authNav';
+import { UserNav } from './userNav';
 
 export const navigator = isLoggedIn => {
   if (!isLoggedIn) {

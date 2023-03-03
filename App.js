@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { navigator } from './Navigation/Navigation';
 export default function App() {
-  const [userIsLoggin, setUserIsLoggin] = useState(true);
+  const [userIsLoggin, setUserIsLoggin] = useState(false);
   const [iasReady, setIasReady] = useState(false);
   // const [User, setUser] = useState({
   //   login: null,

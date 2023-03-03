@@ -1,10 +1,10 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import RegistrationScreen from '../Screens/RegistrationScreen';
 import LoginScreen from '../Screens/LoginScreen';
 
-const MainTab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export const AuthNav = () => {
   return (
