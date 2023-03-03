@@ -1,28 +1,44 @@
-import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Login from './Screens/LoginScreen';
-import Register from './Screens/RegistrationScreen';
-import { PostsScreen } from './Screens/PostsScreen';
-import { CreatePostsScreen } from './Screens/CreatePostsScreen';
-import { CommentsScreen } from './Screens/CommentsScreen';
-import { ProfileScreen } from './Screens/ProfileScreen';
-import { MapScreen } from './Screens/MapScreen';
-import { Home } from './Screens/HomeScreen';
-
-const MainStack = createStackNavigator();
-// const MainTab = createBottomTabNavigator();
-
+import { navigator } from './Navigation/Navigation';
 export default function App() {
+  const [userIsLoggin, setUserIsLoggin] = useState(true);
+  const [iasReady, setIasReady] = useState(false);
+  // const [User, setUser] = useState({
+  //   login: null,
+  //   email: null,
+  //   password: null,
+  // });
+
+  const navigation = navigator(userIsLoggin);
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await Font.loadAsync({
+          'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIasReady(true);
+      }
+    }
+    prepare();
+  }, []);
+  const onLayoutRootView = useCallback(async () => {
+    if (iasReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [iasReady]);
+  if (!iasReady) {
+    return null;
+  }
   return (
-    <NavigationContainer>
-      <MainStack.Navigator initialRouteName="Home">
-        <MainStack.Screen name="Registration" component={Register} />
-        <MainStack.Screen name="Login" component={Login} />
-      </MainStack.Navigator>
-    </NavigationContainer>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <NavigationContainer>{navigation}</NavigationContainer>
+    </View>
   );
 }

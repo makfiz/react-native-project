@@ -11,9 +11,22 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import { useState } from 'react';
 import React from 'react';
 
+const initialState = {
+  email: '',
+
+  password: '',
+};
 export default function LoginScreen({ navigation }) {
+  const [isHidden, setIsHidden] = useState(false);
+
+  const [state, setState] = useState(initialState);
+  const onLogin = () => {
+    console.log(state);
+    setState(initialState);
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -34,35 +47,52 @@ export default function LoginScreen({ navigation }) {
                 }}
               >
                 <TextInput
+                  value={state.email}
+                  onChangeText={value => {
+                    setState(prevState => ({ ...prevState, email: value }));
+                  }}
                   placeholder="Email"
                   autoComplete="email"
                   style={styles.input}
+                  onFocus={() => setIsHidden(!isHidden)}
+                  onBlur={() => setIsHidden(!isHidden)}
                 />
                 <TextInput
+                  value={state.password}
+                  onChangeText={value => {
+                    setState(prevState => ({
+                      ...prevState,
+                      password: value,
+                    }));
+                  }}
                   placeholder="Password"
                   secureTextEntry={true}
                   style={styles.input}
+                  onFocus={() => setIsHidden(!isHidden)}
+                  onBlur={() => setIsHidden(!isHidden)}
                 />
               </View>
-
-              <>
-                <View style={styles.registerBtnViewBox}>
-                  <TouchableOpacity
-                    style={{
-                      ...styles.registerButton,
-                    }}
-                  >
-                    <Text style={styles.buttonText}>Login</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('Register')}
-                  >
-                    <Text style={styles.belowRegisterBtnText}>
-                      Don't have an account yet? Sign Up
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
+              {isHidden ? null : (
+                <>
+                  <View style={styles.registerBtnViewBox}>
+                    <TouchableOpacity
+                      style={{
+                        ...styles.registerButton,
+                      }}
+                      onPress={onLogin}
+                    >
+                      <Text style={styles.buttonText}>Login</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Register')}
+                    >
+                      <Text style={styles.belowRegisterBtnText}>
+                        Don't have an account yet? Sign Up
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
             </KeyboardAvoidingView>
           </View>
         </ImageBackground>
@@ -70,7 +100,7 @@ export default function LoginScreen({ navigation }) {
     </TouchableWithoutFeedback>
   );
 }
-//
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

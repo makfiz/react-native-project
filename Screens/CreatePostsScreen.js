@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Image,
@@ -8,16 +9,84 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import * as Location from 'expo-location';
+import { Camera } from 'expo-camera';
 
 export const CreatePostsScreen = ({ navigation }) => {
+  const [camera, setCamera] = useState(null);
+  const [description, setDescription] = useState('');
+  const [place, setPlace] = useState('');
+  const [image, setImage] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [readyToSend, setReadyToSend] = useState(true);
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permision to access location denied');
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
+
+  useEffect(() => {
+    const inputsFilledIn = image !== null && place !== '' && description !== '';
+    setReadyToSend(!inputsFilledIn);
+  }, [image, place, description]);
+
+  const takePicture = async () => {
+    const photo = await camera.takePictureAsync();
+
+    setImage(photo.uri);
+  };
+
+  const clearInput = val => {
+    setDescription('');
+    setPlace('');
+  };
+  const descriptionHandler = text => setDescription(text);
+  const sendPhoto = async () => {
+    navigation.navigate(
+      'All Posts',
+
+      {
+        image,
+        description,
+        place,
+        location,
+      }
+    );
+  };
+
+  const handleLocation = value => {
+    setPlace(value);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <View style={styles.picPlaceholder}></View>
+        <View style={styles.picPlaceholder}>
+          <Camera style={styles.cameraScreen} ref={setCamera}>
+            {image && (
+              <View style={styles.takenPhotoWrap}>
+                <Image
+                  style={{ height: '100%', width: '100%' }}
+                  source={{ uri: image }}
+                />
+              </View>
+            )}
+            <TouchableOpacity onPress={takePicture} style={styles.addPicPost}>
+              <Image source={require('../images/svg/add-photo-icon.png')} />
+            </TouchableOpacity>
+          </Camera>
+        </View>
         <Text style={styles.createPostTextStyle}>Upload photo</Text>
 
         <TouchableOpacity style={styles.placeholderWrapper}>
           <TextInput
+            value={description}
+            onChangeText={descriptionHandler}
             placeholder="Name your picture"
             placeholderTextColor={'#BDBDBD'}
             style={styles.createPostInput}
@@ -32,6 +101,8 @@ export const CreatePostsScreen = ({ navigation }) => {
             />
 
             <TextInput
+              value={place}
+              onChangeText={handleLocation}
               placeholder="Location"
               placeholderTextColor={'#BDBDBD'}
               style={styles.createPostInput}
@@ -39,7 +110,16 @@ export const CreatePostsScreen = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            sendPhoto(), clearInput();
+          }}
+          disabled={readyToSend}
+          style={{
+            ...styles.submitPost,
+            backgroundColor: !readyToSend ? '#FF6C00' : '#F6F6F6',
+          }}
+        >
           <Text
             style={{
               ...styles.publishTextStyle,
@@ -78,7 +158,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
 
     marginBottom: 9,
-    // marginTop: 30,
   },
   cameraScreen: {
     display: 'flex',

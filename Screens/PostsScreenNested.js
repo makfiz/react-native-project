@@ -1,22 +1,22 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { CommentsScreen } from './nestedScreens/CommentsScreen';
-import { MapScreen } from './nestedScreens/MapScreen';
-
-import { PostsScreen } from './nestedScreens/PostsScreen';
+import { CommentsScreen } from './CommentsScreen';
+import { MapScreen } from './MapScreen';
+import { PostsScreen } from './PostsScreen';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native';
 
 const NestedScreen = createStackNavigator();
 
 export const PostsScreenNested = () => {
+  const logout = () => console.log('logout');
   return (
     <NestedScreen.Navigator>
       <NestedScreen.Screen
         options={{
           title: 'Posts',
           headerRight: () => (
-            <TouchableOpacity style={{ marginRight: 16 }}>
+            <TouchableOpacity style={{ marginRight: 16 }} onPress={logout}>
               <MaterialIcons name="logout" size={24} color="#8F8F8F" />
             </TouchableOpacity>
           ),
@@ -57,4 +57,3 @@ export const PostsScreenNested = () => {
     </NestedScreen.Navigator>
   );
 };
-//

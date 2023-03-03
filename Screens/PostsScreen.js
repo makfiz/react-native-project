@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+
 import {
   View,
   Text,
@@ -6,10 +8,38 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-//
+
 import { FlatList } from 'react-native';
 import { FontAwesome, AntDesign, EvilIcons } from '@expo/vector-icons';
 export const PostsScreen = ({ navigation }) => {
+  const [posts, setPosts] = useState([
+    {
+      id: 'testID',
+      photoToSever:
+        'https://armineh.files.wordpress.com/2019/10/photo-1479936343636-73cdc5aae0c3.jpg?w=720',
+      comments: [],
+      description: 'test description',
+      location: {
+        latitude: 50.450001,
+        longitude: 30.523333,
+      },
+      likes: 99,
+    },
+  ]);
+  const [userLikes, setUserLikes] = useState('no');
+  const [countLikes, setCountLikes] = useState(0);
+
+  const likePost = async (postId, likes) => {
+    setCountLikes(likes);
+    if (userLikes === 'no') {
+      setUserLikes('yes');
+      setCountLikes(+1);
+    } else {
+      setUserLikes('no');
+      setCountLikes(0 ? 0 : -1);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -17,16 +47,18 @@ export const PostsScreen = ({ navigation }) => {
           <ImageBackground
             source={{
               uri: 'https://armineh.files.wordpress.com/2019/10/photo-1479936343636-73cdc5aae0c3.jpg?w=720',
+              comments: [],
             }}
             style={styles.userImage}
           ></ImageBackground>
           <View style={styles.textWrap}>
-            <Text style={styles.textName}>login</Text>
-            <Text>email</Text>
+            <Text style={styles.textName}>testLogin</Text>
+            <Text>testEmail</Text>
           </View>
         </View>
       </TouchableOpacity>
       <FlatList
+        data={posts}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View style={styles.postsContainer}>
@@ -82,7 +114,7 @@ export const PostsScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.postInfoBtn}
                   activeOpacity={0.7}
-                  onPress={() => likePost(item.id)}
+                  onPress={() => likePost(item.id, item.likes)}
                 >
                   <AntDesign
                     name="like2"
@@ -116,10 +148,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
-    // paddingVertical: 30,
     paddingHorizontal: 15,
-    // justifyContent: "center",
-    // alignItems: "center",
     borderBottomColor: '#B3B3B3',
     borderTopColor: '#B3B3B3',
     borderBottomWidth: 1,

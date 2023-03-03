@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,16 +16,47 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 
 export const CommentsScreen = ({ route }) => {
+  const [keyboardActive, setKeyboardActive] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const { postId, photo, allComments } = route.params;
+  const login = 'testUser';
+  const userId = 'testID';
+  // const commentDate = 'testComent :)';
+
+  const createComment = async () => {
+    const commentDate = new Date().toLocaleString('en', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    });
+
+    setComments(prevComments => [
+      ...prevComments,
+      { newComment, login, userId, commentDate },
+    ]);
+    Keyboard.dismiss();
+    setNewComment('');
+  };
+
+  const hideKeyboard = () => {
+    Keyboard.dismiss();
+    setKeyboardActive(false);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView style={styles.container}>
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
           <View style={styles.postPhotoContainer}>
-            <Image style={styles.postPhoto} />
+            <Image style={styles.postPhoto} source={{ uri: photo }} />
           </View>
           {comments.length > 0 && (
             <SafeAreaView style={styles.commentListWrap}>
               <FlatList
+                data={comments}
                 renderItem={({ item }) => {
                   const currentUser = userId === item.userId;
 
@@ -81,9 +113,14 @@ export const CommentsScreen = ({ route }) => {
             <TextInput
               style={styles.input}
               value={newComment}
+              onChangeText={setNewComment}
               placeholder="Add a comment..."
             />
-            <TouchableOpacity style={styles.addCommentBtn}>
+            <TouchableOpacity
+              style={styles.addCommentBtn}
+              onFocus={() => setKeyboardActive(true)}
+              onPress={createComment}
+            >
               <AntDesign name="arrowup" size={20} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
@@ -96,6 +133,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
+
     borderBottomColor: '#B3B3B3',
     borderTopColor: '#B3B3B3',
     borderBottomWidth: 1,

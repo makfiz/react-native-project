@@ -10,10 +10,22 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-
+import { useState } from 'react';
 import React from 'react';
+const initialState = {
+  login: '',
+  email: '',
 
+  password: '',
+};
 export default function RegistrationScreen({ navigation }) {
+  const [state, setState] = useState(initialState);
+  const [isHidden, setIsHidden] = useState(false);
+  const onSignUP = () => {
+    console.log(state);
+    setState(initialState);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -40,36 +52,63 @@ export default function RegistrationScreen({ navigation }) {
                 }}
               >
                 <TextInput
+                  value={state.login}
+                  onChangeText={value => {
+                    setState(prevState => ({ ...prevState, login: value }));
+                  }}
                   placeholder="Login"
                   style={styles.input}
                   autoComplete="username"
+                  onFocus={() => setIsHidden(!isHidden)}
+                  onBlur={() => setIsHidden(!isHidden)}
                 />
-                <TextInput placeholder="Email" autoComplete="email" />
                 <TextInput
+                  value={state.email}
+                  onChangeText={value => {
+                    setState(prevState => ({ ...prevState, email: value }));
+                  }}
+                  placeholder="Email"
+                  autoComplete="email"
+                  style={styles.input}
+                  onFocus={() => setIsHidden(!isHidden)}
+                  onBlur={() => setIsHidden(!isHidden)}
+                />
+                <TextInput
+                  value={state.password}
+                  onChangeText={value => {
+                    setState(prevState => ({
+                      ...prevState,
+                      password: value,
+                    }));
+                  }}
                   placeholder="Password"
                   secureTextEntry={true}
                   style={styles.input}
+                  onFocus={() => setIsHidden(!isHidden)}
+                  onBlur={() => setIsHidden(!isHidden)}
                 />
               </View>
-
-              <>
-                <View style={styles.registerBtnViewBox}>
-                  <TouchableOpacity
-                    style={{
-                      ...styles.registerButton,
-                    }}
-                  >
-                    <Text style={styles.buttonText}>Register</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('Login')}
-                  >
-                    <Text style={styles.belowRegisterBtnText}>
-                      Have an account already? Login
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
+              {isHidden ? null : (
+                <>
+                  <View style={styles.registerBtnViewBox}>
+                    <TouchableOpacity
+                      style={{
+                        ...styles.registerButton,
+                      }}
+                      onPress={onSignUP}
+                    >
+                      <Text style={styles.buttonText}>Register</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Login')}
+                    >
+                      <Text style={styles.belowRegisterBtnText}>
+                        Have an account already? Login
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
             </KeyboardAvoidingView>
           </View>
         </ImageBackground>
@@ -189,4 +228,3 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '90deg' }],
   },
 });
-//

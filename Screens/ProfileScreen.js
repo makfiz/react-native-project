@@ -48,4 +48,3 @@ export const ProfileScreen = () => {
     </NestedScreen.Navigator>
   );
 };
-//

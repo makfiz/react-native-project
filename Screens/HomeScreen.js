@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,10 +8,50 @@ import {
   ImageBackground,
   FlatList,
 } from 'react-native';
-
 import { FontAwesome, AntDesign, EvilIcons } from '@expo/vector-icons';
 
 export const HomeScreen = ({ route, navigation }) => {
+  const [posts, setPosts] = useState([
+    {
+      id: 'testID',
+      photoToSever:
+        'https://armineh.files.wordpress.com/2019/10/photo-1479936343636-73cdc5aae0c3.jpg?w=720',
+      comments: [],
+      description: 'test description',
+      location: {
+        latitude: 50.450001,
+        longitude: 30.523333,
+      },
+      likes: 99,
+    },
+    {
+      id: 'testID2',
+      photoToSever:
+        'https://otkritkis.com/wp-content/uploads/2021/12/4-640x360-1.jpg',
+      comments: [],
+      description: 'test2 description2',
+      location: {
+        latitude: 50.450001,
+        longitude: 30.523333,
+      },
+      likes: 10,
+    },
+  ]);
+  const [userLikes, setUserLikes] = useState('no');
+  const [countLikes, setCountLikes] = useState(0);
+
+  const likePost = async postId => {
+    if (userLikes === 'no') {
+      setUserLikes('yes');
+      setCountLikes(+1);
+      addLike(postId);
+    } else {
+      setUserLikes('no');
+      setCountLikes(-1);
+      addLike(postId);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -31,10 +72,12 @@ export const HomeScreen = ({ route, navigation }) => {
               <Text style={styles.btnRectangleRotate}>I</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.profileTitle}>{login}</Text>
+          <Text style={styles.profileTitle}>testLogin</Text>
           <FlatList
+            data={posts}
             keyExtractor={item => item.id}
             renderItem={({ item }) => {
+              console.log(item);
               return (
                 <View style={styles.postContainer}>
                   <TouchableOpacity
@@ -86,6 +129,7 @@ export const HomeScreen = ({ route, navigation }) => {
                       <TouchableOpacity
                         style={styles.postInfoBtn}
                         activeOpacity={0.8}
+                        onPress={() => likePost(item.id)}
                       >
                         <AntDesign
                           name="like2"
@@ -139,10 +183,8 @@ const styles = StyleSheet.create({
     marginTop: 170,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    // alignContent: "flex-end",
     paddingLeft: 16,
     paddingRight: 16,
-    // flex: 1,
     justifyContent: 'center',
   },
   profileAvatarBox: {
