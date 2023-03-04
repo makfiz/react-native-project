@@ -19,12 +19,15 @@ const initialState = {
 
   password: '',
 };
+
+import { TabActions } from '@react-navigation/native';
+
 export default function LoginScreen({ navigation }) {
   const [isHidden, setIsHidden] = useState(false);
 
   const [state, setState] = useState(initialState);
   const onLogin = () => {
-    console.log(state);
+    navigation.navigate('Home');
     setState(initialState);
   };
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-
+import { UserNav } from './userNav';
 import RegistrationScreen from '../Screens/RegistrationScreen';
 import LoginScreen from '../Screens/LoginScreen';
 
@@ -18,6 +18,11 @@ export const AuthNav = () => {
         options={{ headerShown: false }}
         name="Register"
         component={RegistrationScreen}
+      />
+      <Stack.Screen
+        options={{ headerShown: false }}
+        name="Home"
+        component={UserNav}
       />
     </Stack.Navigator>
   );
