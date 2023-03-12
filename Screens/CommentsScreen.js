@@ -13,17 +13,24 @@ import {
   ImageBackground,
   Image,
 } from 'react-native';
+import db from '../firebase/config';
+import { useSelector } from 'react-redux';
 import { AntDesign } from '@expo/vector-icons';
 
 export const CommentsScreen = ({ route }) => {
   const [keyboardActive, setKeyboardActive] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState([]);
-  const { postId, photo, allComments } = route.params;
-  const login = 'testUser';
-  const userId = 'testID';
-  // const commentDate = 'testComent :)';
+  const { postId, photo } = route.params;
+  const { login, userId } = useSelector(state => state.auth);
+  useEffect(() => {
+    const fetchComments = async () => {
+      const data = await db.firestore().collection('posts').doc(postId).get();
+      setComments(data.data().comments);
+    };
 
+    fetchComments();
+  }, [postId]);
   const createComment = async () => {
     const commentDate = new Date().toLocaleString('en', {
       day: 'numeric',
@@ -32,6 +39,25 @@ export const CommentsScreen = ({ route }) => {
       hour: 'numeric',
       minute: 'numeric',
     });
+
+    await db
+      .firestore()
+      .collection('posts')
+      .doc(postId)
+      .set(
+        {
+          comments: [
+            ...(comments || []),
+            {
+              newComment,
+              login,
+              userId,
+              commentDate,
+            },
+          ],
+        },
+        { merge: true }
+      );
 
     setComments(prevComments => [
       ...prevComments,
@@ -133,7 +159,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
-
     borderBottomColor: '#B3B3B3',
     borderTopColor: '#B3B3B3',
     borderBottomWidth: 1,

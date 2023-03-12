@@ -8,37 +8,27 @@ import {
   ImageBackground,
   FlatList,
 } from 'react-native';
+import db from '../firebase/config';
 import { FontAwesome, AntDesign, EvilIcons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 
 export const HomeScreen = ({ route, navigation }) => {
-  const [posts, setPosts] = useState([
-    {
-      id: 'testID',
-      photoToSever:
-        'https://armineh.files.wordpress.com/2019/10/photo-1479936343636-73cdc5aae0c3.jpg?w=720',
-      comments: [],
-      description: 'test description',
-      location: {
-        latitude: 50.450001,
-        longitude: 30.523333,
-      },
-      likes: 99,
-    },
-    {
-      id: 'testID2',
-      photoToSever:
-        'https://otkritkis.com/wp-content/uploads/2021/12/4-640x360-1.jpg',
-      comments: [],
-      description: 'test2 description2',
-      location: {
-        latitude: 50.482001,
-        longitude: 30.673333,
-      },
-      likes: 10,
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
   const [userLikes, setUserLikes] = useState('no');
   const [countLikes, setCountLikes] = useState(0);
+  const { login, userId } = useSelector(state => state.auth);
+  const getUserPosts = async () => {
+    await db
+      .firestore()
+      .collection('posts')
+      .where('userId', '==', userId)
+      .onSnapshot(data =>
+        setPosts(data.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+      );
+  };
+  useEffect(() => {
+    getUserPosts();
+  }, []);
 
   const likePost = async postId => {
     if (userLikes === 'no') {
@@ -50,6 +40,15 @@ export const HomeScreen = ({ route, navigation }) => {
       setCountLikes(-1);
       addLike(postId);
     }
+  };
+  const addLike = async postId => {
+    const data = await db.firestore().collection('posts').doc(postId).get();
+    const { likes } = data.data();
+    await db
+      .firestore()
+      .collection('posts')
+      .doc(postId)
+      .update({ likes: (likes ? likes : 0) + countLikes });
   };
 
   return (
@@ -72,7 +71,7 @@ export const HomeScreen = ({ route, navigation }) => {
               <Text style={styles.btnRectangleRotate}>I</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.profileTitle}>testLogin</Text>
+          <Text style={styles.profileTitle}>{login}</Text>
           <FlatList
             data={posts}
             keyExtractor={item => item.id}
@@ -129,7 +128,7 @@ export const HomeScreen = ({ route, navigation }) => {
                       <TouchableOpacity
                         style={styles.postInfoBtn}
                         activeOpacity={0.8}
-                        onPress={() => likePost(item.id)}
+                        // onPress={() => likePost(item.id)}
                       >
                         <AntDesign
                           name="like2"

@@ -10,8 +10,10 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
+import { authSignUpUser } from '../redux/auth/authOperations';
 import { useState } from 'react';
 import React from 'react';
+import { useDispatch } from 'react-redux';
 const initialState = {
   login: '',
   email: '',
@@ -21,7 +23,9 @@ const initialState = {
 export default function RegistrationScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isHidden, setIsHidden] = useState(false);
-  const onSignUP = () => {
+  const dispatch = useDispatch();
+  const onLogin = () => {
+    dispatch(authSignUpUser(state));
     console.log(state);
     setState(initialState);
   };
@@ -95,7 +99,7 @@ export default function RegistrationScreen({ navigation }) {
                       style={{
                         ...styles.registerButton,
                       }}
-                      onPress={onSignUP}
+                      onPress={onLogin}
                     >
                       <Text style={styles.buttonText}>Register</Text>
                     </TouchableOpacity>

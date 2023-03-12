@@ -8,36 +8,47 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-
+import db from '../firebase/config';
+import { useSelector } from 'react-redux';
 import { FlatList } from 'react-native';
 import { FontAwesome, AntDesign, EvilIcons } from '@expo/vector-icons';
 export const PostsScreen = ({ navigation }) => {
-  const [posts, setPosts] = useState([
-    {
-      id: 'testID',
-      photoToSever:
-        'https://armineh.files.wordpress.com/2019/10/photo-1479936343636-73cdc5aae0c3.jpg?w=720',
-      comments: [],
-      description: 'test description',
-      location: {
-        latitude: 50.450001,
-        longitude: 30.523333,
-      },
-      likes: 99,
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
   const [userLikes, setUserLikes] = useState('no');
   const [countLikes, setCountLikes] = useState(0);
 
-  const likePost = async (postId, likes) => {
-    setCountLikes(likes);
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+  const { login, email } = useSelector(state => state.auth);
+  const getAllPosts = async () => {
+    await db
+      .firestore()
+      .collection('posts')
+      .onSnapshot(data =>
+        setPosts(data.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+      );
+  };
+
+  const likePost = async postId => {
     if (userLikes === 'no') {
       setUserLikes('yes');
       setCountLikes(+1);
+      addLike(postId);
     } else {
       setUserLikes('no');
       setCountLikes(0 ? 0 : -1);
+      addLike(postId);
     }
+  };
+  const addLike = async postId => {
+    const data = await db.firestore().collection('posts').doc(postId).get();
+    const { likes } = data.data();
+    await db
+      .firestore()
+      .collection('posts')
+      .doc(postId)
+      .update({ likes: (likes ? likes : 0) + countLikes });
   };
 
   return (
@@ -47,13 +58,12 @@ export const PostsScreen = ({ navigation }) => {
           <ImageBackground
             source={{
               uri: 'https://armineh.files.wordpress.com/2019/10/photo-1479936343636-73cdc5aae0c3.jpg?w=720',
-              comments: [],
             }}
             style={styles.userImage}
           ></ImageBackground>
           <View style={styles.textWrap}>
-            <Text style={styles.textName}>testLogin</Text>
-            <Text>testEmail</Text>
+            <Text style={styles.textName}>{login}</Text>
+            <Text>{email}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -114,7 +124,7 @@ export const PostsScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.postInfoBtn}
                   activeOpacity={0.7}
-                  onPress={() => likePost(item.id, item.likes)}
+                  onPress={() => likePost(item.id)}
                 >
                   <AntDesign
                     name="like2"

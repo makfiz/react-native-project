@@ -13,21 +13,22 @@ import {
 
 import { useState } from 'react';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { authSignInUser } from './../redux/auth/authOperations';
 
 const initialState = {
   email: '',
 
   password: '',
 };
-
-import { TabActions } from '@react-navigation/native';
-
 export default function LoginScreen({ navigation }) {
   const [isHidden, setIsHidden] = useState(false);
 
   const [state, setState] = useState(initialState);
+  const dispatch = useDispatch();
   const onLogin = () => {
-    navigation.navigate('Home');
+    dispatch(authSignInUser(state));
+    console.log(state);
     setState(initialState);
   };
   return (

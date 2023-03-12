@@ -12,6 +12,9 @@ import {
 import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
 
+import db from '../firebase/config';
+import { useSelector } from 'react-redux';
+
 export const CreatePostsScreen = ({ navigation }) => {
   const [camera, setCamera] = useState(null);
   const [description, setDescription] = useState('');
@@ -19,6 +22,7 @@ export const CreatePostsScreen = ({ navigation }) => {
   const [image, setImage] = useState(null);
   const [location, setLocation] = useState(null);
   const [readyToSend, setReadyToSend] = useState(true);
+  const { userId, login } = useSelector(state => state.auth);
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -47,8 +51,9 @@ export const CreatePostsScreen = ({ navigation }) => {
   };
   const descriptionHandler = text => setDescription(text);
   const sendPhoto = async () => {
+    uploadPhotoToServer();
     navigation.navigate(
-      'All Posts',
+      'Profile',
 
       {
         image,
@@ -57,8 +62,36 @@ export const CreatePostsScreen = ({ navigation }) => {
         location,
       }
     );
+    uploadPostToServer();
   };
 
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(image);
+    const file = await response.blob();
+    const uniquePostId = Date.now().toString();
+    await db.storage().ref(`postImage/${uniquePostId}`).put(file);
+    const processedPhoto = await db
+      .storage()
+      .ref(`postImage`)
+      .child(uniquePostId)
+      .getDownloadURL();
+    return processedPhoto;
+  };
+
+  const uploadPostToServer = async () => {
+    const postDate = new Date();
+    const photoToSever = await uploadPhotoToServer();
+    await db.firestore().collection('posts').add({
+      photoToSever,
+      description,
+      location: location.coords,
+      userId,
+      login,
+      place: place,
+      postDate: postDate.toLocaleString(),
+      comments: [],
+    });
+  };
   const handleLocation = value => {
     setPlace(value);
   };
